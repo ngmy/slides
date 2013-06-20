@@ -44,7 +44,7 @@
 
 ## ビルド状況
 
-![phpundercontrol](images/phpundercontrol_projects.png)
+![phpundercontrol_projects](images/phpundercontrol_projects.png)
 
 * ビルド成功時はグリーン、失敗時はレッドになる
 * リポジトリ単位でプロジェクトを作成可能
@@ -52,33 +52,33 @@
 
 ## 単体試験
 
-![phpundercontrol](images/phpundercontrol_phpunit.png)
+![phpundercontrol_phpunit](images/phpundercontrol_phpunit.png)
 
 * テスト成功時はグリーン、失敗時はレッドになる
 
 
 ## カバレッジ
 
-![phpundercontrol](images/phpundercontrol_coverage.png)
+![phpundercontrol_coverage](images/phpundercontrol_coverage.png)
 
 * カバレッジの度合いを色分けして表示
   * 「高」はグリーン
-  * 「中」は黄色
-  * 「低」は赤
-* ファイル名をクリックすると、コードレベルで通っている箇所が色づけされるので便利
+  * 「中」はイエロー
+  * 「低」はレッド
+* ファイルごとの実行された行／実行されなかった行も色分けして表示可能
 
 
 ## コーディング規約チェック
 
-![phpundercontrol](images/phpundercontrol_phpcs.png)
+![phpundercontrol_phpcs](images/phpundercontrol_phpcs.png)
 
-* プロジェクトで決めたコーディング規約が遵守されているかチェック
-* Error（重度な違反）、Warning（軽度な違反）の2段階
+* プロジェクトで決めたコーディング規約を遵守しているかチェック
+* Error（重度な違反）、Warning（軽度な違反）の2段階で指摘
 
 
 ## コード改善
 
-![phpundercontrol](images/phpundercontrol_phpmd.png)
+![phpundercontrol_phpmd](images/phpundercontrol_phpmd.png)
 
 * コードの改善点を指摘してくれる
   * メソッドが長すぎる
@@ -92,19 +92,19 @@
 
 ## ビルドのメトリクス
 
-![phpundercontrol](images/phpundercontrol_metrics.png)
+![phpundercontrol_metrics](images/phpundercontrol_metrics.png)
 
 
 ## 具体例1
 
-![phpundercontrol](images/phpundercontrol_metrics_coverage.png)
+![phpundercontrol_metrics_coverage](images/phpundercontrol_metrics_coverage.png)
 
 （´-`）.｡oO（カバレッジが高いので安心だな）
 
 
 ## 具体例2
 
-![phpundercontrol](images/phpundercontrol_metrics_coding_violations.png)
+![phpundercontrol_metrics_coding_violations](images/phpundercontrol_metrics_coding_violations.png)
 
 （´-`）.｡oO（よし、コーディング規約は守られているな）
 
@@ -113,11 +113,11 @@
 
 ## 具体例3
 
-![phpundercontrol](images/phpundercontrol_metrics_test_to_code_ratio.png)
+![phpundercontrol_metrics_test_to_code_ratio](images/phpundercontrol_metrics_test_to_code_ratio.png)
 
 * 実コードが増えたらテストコードも増えている
 
-  ⇒テストしている 
+  ⇒テストしている
 
 * 実コードが増えたのにテストコードが増えていない
 
@@ -128,7 +128,7 @@
 
 ## 具体例4
 
-![phpundercontrol](images/phpundercontrol_metrics_build.png)
+![phpundercontrol_metrics_build](images/phpundercontrol_metrics_build.png)
 
 * オレンジ（失敗ビルド）が多い
 
@@ -147,10 +147,13 @@
 * 継続的インテグレーションツール
   * phpUnderControl
   * CruiseControl
-  * Jennkins
+  * Jenkins
+  * など
 * 継続的インテグレーション用サーバ
 * バージョン管理システム
-  * Subversion、Gitなど
+  * Subversion
+  * Git
+  * など
 * テストコード
 
 
@@ -170,7 +173,7 @@
 * 品質の視える化
 
 
-## Let's Enjoy Continuous Integratioan Life!
+## Let's Enjoy Continuous Integration Life!
 
 
 
