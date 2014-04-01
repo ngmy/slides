@@ -6,89 +6,259 @@
     <link rel="stylesheet" href="../../reveal.js/css/reveal.css">
     <link rel="stylesheet" href="../../reveal.js/css/theme/default.css" id="theme">
     <link rel="stylesheet" href="../../reveal.js/lib/css/zenburn.css">
+    <style type="text/css">
+      .reveal h1,
+      .reveal h2,
+      .reveal h3,
+      .reveal h4,
+      .reveal h5,
+      .reveal h6 {
+        font-family: 'Lucida Grande', 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', Meiryo, メイリオ, sans-serif !important;
+      }
+
+      code {
+        font-family: Consolas, 'Courier New', Courier, Monaco, monospace !important;
+      }
+
+      h2 {
+        text-transform: none !important;
+      }
+    </style>
   </head>
   <body>
     <div class="reveal">
       <div class="slides">
 
-        <!-- Use external markdown resource, separate slides by three newlines; vertical slides by two newlines -->
-        <section data-markdown="example.md" data-separator="^\n\n\n" data-vertical="^\n\n"></section>
-
-        <!-- Slides are separated by three dashes (quick 'n dirty regular expression) -->
-        <section data-markdown data-separator="---">
-          <script type="text/template">
-            ## Demo 1
-            Slide 1
-            ---
-            ## Demo 1
-            Slide 2
-            ---
-            ## Demo 1
-            Slide 3
-          </script>
-        </section>
-
-        <!-- Slides are separated by newline + three dashes + newline, vertical slides identical but two dashes -->
         <section data-markdown data-separator="^\n---\n$" data-vertical="^\n--\n$">
           <script type="text/template">
-            ## Demo 2
-            Slide 1.1
+            ## Laravelのパッケージ開発に役立つパッケージ
+
+            ---
+
+            ## 自己紹介
+
+            * 永宮　悠大
+            * 仕事
+              * SIer / ソフトウェアエンジニア
+              * CodeIgniter暦1年半、Laravel 4暦半年
+            * ソーシャル
+              * Twitter: [@ngmy](https://twitter.com/ngmy)
+              * GitHub: [ngmy](https://github.com/ngmy)
+
+            ---
+
+            ## モチベーション
+
+            * テストをLaravelらしく書きたい
+              * `$obj = new SomeClass; $obj->someMethod();`ではなく`SomeClass::someMethod();`と書きたい
+            * テストでLaravelのコアクラス使いたい
+              * Eloquentモデルのモックを作りたい
+              * 普通にやると「Class 'Eloquent' not found」
+            * Travis CIとかCoverallsで継続的インテグレーションしたい
+
+            ---
+
+            ## testbench
+
+            * [orchestral / testbench](https://github.com/orchestral/testbench)
+            * Laravelのパッケージ開発用のユニットテストヘルパー
+            * Laravelのコアクラスのモックを提供
 
             --
 
-            ## Demo 2
-            Slide 1.2
+            ## インストール
 
-            ---
+            composer.json
 
-            ## Demo 2
-            Slide 2
-          </script>
-        </section>
-
-        <!-- No "extra" slides, since there are no separators defined (so they'll become horizontal rulers) -->
-        <section data-markdown>
-          <script type="text/template">
-            A
-
-            ---
-
-            B
-
-            ---
-
-            C
-          </script>
-        </section>
-
-        <!-- Slide attributes -->
-        <section data-markdown>
-          <script type="text/template">
-            <!-- .slide: data-background="#000000" -->
-            ## Slide attributes
-          </script>
-        </section>
-
-        <!-- Element attributes -->
-        <section data-markdown>
-          <script type="text/template">
-            ## Element attributes
-            - Item 1 <!-- .element: class="fragment" data-fragment-index="2" -->
-            - Item 2 <!-- .element: class="fragment" data-fragment-index="1" -->
-          </script>
-        </section>
-
-        <!-- Code -->
-        <section data-markdown>
-          <script type="text/template">
-            ```php
-            public function foo()
+            ```json
             {
-                $foo = array(
-                    'bar' => 'bar'
-                )
+                "require-dev": {
+                    "orchestra/testbench": "2.1.*"
+                }
             }
             ```
+
+            --
+
+            ## 使い方
+
+            tests/TestCase.phpに基底クラスを定義して
+
+            ```php
+            class TestCase extends Orchestra\Testbench\TestCase {}
+            ```
+
+            composer.jsonのautoloadに追加
+
+            ```json
+            {
+                "autoload": {
+                    "classmap": [
+                        "tests/TestCase.php"
+                    ]
+                }
+            }
+            ```
+
+            --
+
+            ## サービスプロバイダー
+
+            ```php
+            protected function getPackageProviders()
+            {
+                return array(
+                    'Ngmy\NgmyServiceProvider',
+                );
+            }
+            ```
+
+            --
+
+            ## エイリアスの定義ができて
+
+            ```php
+            protected function getPackageAliases()
+            {
+                return array(
+                    'Ngmy' => 'Ngmy\NgmyFacades'
+                );
+            }
+            ```
+
+            --
+
+            ## テストをLaravelらしく<br>書ける
+
+            ```php
+            use Ngmy;
+
+            class SomeTest {
+
+              protected function testSome()
+              {
+                  Ngmy::someMethod();
+              }
+
+            }
+            ```
+
+            --
+
+            ## Eloquentモデルのモックを作れる
+
+            ```php
+            public function setUp()
+            {
+                parent::setUp();
+
+                $this->app['config']->set('database.default', 'sqlite');
+                $this->app['config']->set('database.connections.sqlite', array(
+                    'driver'   => 'sqlite',
+                    'database' => ':memory:',
+                    'prefix'   => '',
+                ));
+                Schema::create('users', function ($table)
+                {
+                    $table->increments('id');
+                    $table->string('name');
+                    $table->timestamps();
+                });
+            }
+            ```
+
+            --
+
+            ## Eloquentのモック
+
+            ```php
+            use Illuminate\Database\Eloquent\Model as Eloquent;
+
+            class MockUser extends Eloquent {}
+            ```
+
+            --
+
+            ## Travis CIでも問題なく動く
+
+            ![travis](img/travis.png)
+
+            ---
+
+            ## php-coveralls
+
+            * [satooshi / php-coveralls](https://github.com/satooshi/php-coveralls)
+            * PHPでCoverallsできるようにするプラグイン
+            * Coveralls
+              * Travis CIと連動してユニットテストのカバレッジを計測してくれるサービス
+
+            --
+
+            ## composer.json
+
+            ```json
+            {
+                "require-dev": {
+                    "satooshi/php-coveralls": "dev-master"
+                }
+            }
+            ```
+
+            --
+
+            ## phpunit.xml
+
+            ```xml
+            <phpunit ...
+            >
+            ...
+                <log type="coverage-clover" target="build/logs/clover.xml"/>
+                </logging>
+            </phpunit>
+            ```
+
+            --
+
+            ## .coveralls.yml
+
+            ```yaml
+            service_name: travis-ci
+            ```
+
+            --
+
+            ## .travis.yml
+
+            ```yaml
+            language: php
+
+            php:
+              - 5.3
+              - 5.4
+              - 5.5
+
+            before_script:
+              - curl -s http://getcomposer.org/installer | php
+              - php composer.phar install --dev
+
+            script:
+              - mkdir -p build/logs
+              - phpunit
+
+            after_script:
+              - php vendor/bin/coveralls
+            ```
+
+            --
+
+            ## PHPでCoverallsできる
+
+            ![coveralls](img/coveralls.png)
+
+            ---
+
+            ## 楽しいパッケージ開発を！
+
           </script>
         </section>
 
