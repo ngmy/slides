@@ -2,7 +2,7 @@
 <html lang="ja">
   <head>
     <meta charset="utf-8">
-    <title>reveal.js - Markdown Demo</title>
+    <title>Laravelのパッケージのテストに便利なパッケージ</title>
     <link rel="stylesheet" href="../../reveal.js/css/reveal.css">
     <link rel="stylesheet" href="../../reveal.js/css/theme/default.css" id="theme">
     <link rel="stylesheet" href="../../reveal.js/lib/css/zenburn.css">
@@ -31,42 +31,47 @@
 
         <section data-markdown data-separator="^\n---\n$" data-vertical="^\n--\n$">
           <script type="text/template">
-            ## Laravelのパッケージ開発に役立つパッケージ
+            ## Laravelのパッケージの<br>テストに便利なパッケージ
+
+            Laravel Meetup Tokyo Vol.3
+
+            永宮　悠大
 
             ---
 
             ## 自己紹介
 
-            * 永宮　悠大
+            * 永宮　悠大（Yuta Nagamiya）
             * 仕事
-              * SIer / ソフトウェアエンジニア
-              * CodeIgniter暦1年半、Laravel 4暦半年
+              * SIerのソフトウェアエンジニア
+              * CodeIgniter暦1年半、Laravel暦半年
             * ソーシャル
-              * Twitter: [@ngmy](https://twitter.com/ngmy)
-              * GitHub: [ngmy](https://github.com/ngmy)
+              * Twitter：[@ngmy](https://twitter.com/ngmy)
+              * GitHub：[ngmy](https://github.com/ngmy)
 
             ---
 
             ## モチベーション
 
             * Laravelらしいテストコードを書きたい
-            * Laravelのコアクラスのモックを作りたい
-              * Eloquentモデルのモックを作りたい
-              * 普通にやると「Class 'Eloquent' not found」
-            * Travis CIとかCoverallsで継続的インテグレーションしたい
+            * Laravelのコアクラスをテストで使いたい
+            * Travis CIで継続的インテグレーションしたい
 
-            --
+            ---
 
             ## Laravelらしくないテスト
 
             ```php
-            public function testSomething()
+            class SomePackageTest extends PHPUnit_Framework_TestCase
             {
-                $ngmy = new Ngmy;
+            	public function testSomething()
+            	{
+            		$ngmy = new SomePackage;
 
-                $result = $ngmy->someMethod();
+            		$ngmy->someMethod();
 
-                $this->assertEquals('ngmy', $result);
+            		// Some test
+            	}
             }
             ```
 
@@ -75,45 +80,48 @@
             ## Laravelらしいテスト
 
             ```php
-            public function testSomething()
+            class SomePackageTest extends PHPUnit_Framework_TestCase
             {
-                $result = Ngmy::someMethod();
+            	public function testSomething()
+            	{
+            		SomePackage::someMethod();
 
-                $this->assertEquals('ngmy', $result);
+            		// Some test
+            	}
             }
             ```
 
-            --
+            ---
 
-            ## コアクラスのモック
+            ## コアクラスの利用
 
             ```php
-            class MockUser extends Eloquent {}
+            class User extends Eloquent {}
 
-            class SomeTest
+            class SomePackageTest extends PHPUnit_Framework_TestCase
             {
-              public function testSomething()
-              {
-                  // Make test data
-                  $u = new User;
-                  $u->name  = 'ngmy';
-                  $u->email = 'ngmy@example.com';
-                  $u->save();
+            	public function testSomething()
+            	{
+            		// Make test data
+            		$u = new User;
+            		$u->name  = 'ngmy';
+            		$u->email = 'ngmy@example.com';
+            		$u->save();
 
-                  // some test
-              }
+            		// Some test
+            	}
             }
             ```
 
-            --
+            ---
 
             ## testbench
 
             * [orchestral / testbench](https://github.com/orchestral/testbench)
             * Laravelのパッケージ開発用のユニットテストヘルパー
-            * Laravelのコアクラスのモックを提供
+            * Laravelのコアクラスを提供
 
-            --
+            ---
 
             ## インストール
 
@@ -121,13 +129,13 @@
 
             ```json
             {
-                "require-dev": {
-                    "orchestra/testbench": "2.1.*"
-                }
+            	"require-dev": {
+            		"orchestra/testbench": "2.1.*"
+            	}
             }
             ```
 
-            --
+            ---
 
             ## 使い方（1/4）
 
@@ -141,15 +149,15 @@
 
             ## 使い方（2/4）
 
-            composer.jsonのautoloadに追加する
+            composer.jsonのautoloadに基底クラスを追加する
 
             ```json
             {
-                "autoload": {
-                    "classmap": [
-                        "tests/TestCase.php"
-                    ]
-                }
+            	"autoload": {
+            		"classmap": [
+            			"tests/TestCase.php"
+            		]
+            	}
             }
             ```
 
@@ -162,9 +170,9 @@
             ```php
             protected function getPackageProviders()
             {
-                return array(
-                    'Ngmy\NgmyServiceProvider',
-                );
+            	return array(
+            		'Ngmy\SomePackage\SomePackageServiceProvider',
+            	);
             }
             ```
 
@@ -177,70 +185,75 @@
             ```php
             protected function getPackageAliases()
             {
-                return array(
-                    'Ngmy' => 'Ngmy\NgmyFacades'
-                );
+            	return array(
+            		'SomePackage' => 'Ngmy\SomePackage\Facades\SomePackage'
+            	);
             }
             ```
 
-            --
+            ---
 
-            ## Laravelらしくテストできる
-
-            ```php
-            use \Ngmy;
-
-            class SomeTest extends \TestCase {
-
-                protected function testSome()
-                {
-                    Ngmy::someMethod();
-
-                    // Some test
-                }
-
-            }
-            ```
-
-            --
-
-            ## Eloquentモデルのモックを作れる
+            ## Laravelらしいテストが<br>書ける
 
             ```php
-            public function setUp()
+            use \Package;
+
+            class SomePackageTest extends TestCase
             {
-                parent::setUp();
+            	protected function testSomething()
+            	{
+            		Package::someMethod();
 
-                $this->app['config']->set('database.default', 'sqlite');
-                $this->app['config']->set('database.connections.sqlite', array(
-                    'driver'   => 'sqlite',
-                    'database' => ':memory:',
-                    'prefix'   => '',
-                ));
-                Schema::create('users', function ($table)
-                {
-                    $table->increments('id');
-                    $table->string('name');
-                    $table->timestamps();
-                });
+            		// Some test
+            	}
             }
             ```
 
-            --
+            ---
 
-            ## Eloquentのモック
+            ## コアクラスを利用できる（1/2）
 
             ```php
             use Illuminate\Database\Eloquent\Model as Eloquent;
 
-            class MockUser extends Eloquent {}
+            class User extends Eloquent {}
             ```
 
             --
 
-            ## これでパッケージ開発が捗る
+            ## コアクラスを利用できる（2/2）
 
-            --
+            ```php
+            class SomePackageTest extends TestCase
+            {
+            	public function setUp()
+            	{
+            		parent::setUp();
+
+            		// Set up a database
+            		$this->app['config']->set('database.default', 'sqlite');
+            		$this->app['config']->set('database.connections.sqlite', array(
+            			'driver'   => 'sqlite',
+            			'database' => ':memory:',
+            			'prefix'   => '',
+            		));
+
+            		// Create a table
+            		Schema::create('users', function ($table)
+            		{
+            			$table->increments('id');
+            			$table->string('name');
+            			$table->timestamps();
+            		});
+            	}
+            }
+            ```
+
+            ---
+
+            ## これでパッケージ開発が<br>捗る
+
+            ---
 
             ## Travis CIでも動くよ！
 
@@ -249,6 +262,10 @@
             ---
 
             ## 楽しいパッケージ開発を！
+
+            ---
+
+            ## ご清聴<br>ありがとうございました
 
           </script>
         </section>
