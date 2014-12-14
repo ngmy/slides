@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>reveal.js - Markdown Demo</title>
+    <link rel="stylesheet" href="../../reveal.js/css/reveal.css">
+    <link rel="stylesheet" href="../../reveal.js/css/theme/beige.css" id="theme">
+    <link rel="stylesheet" href="../../reveal.js/lib/css/zenburn.css">
+    <style type="text/css">
+      .reveal h1,
+      .reveal h2,
+      .reveal h3,
+      .reveal h4,
+      .reveal h5,
+      .reveal h6 {
+        font-family: 'Lucida Grande', 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', Meiryo, メイリオ, sans-serif !important;
+      }
+
+      code {
+        font-family: Consolas, 'Courier New', Courier, Monaco, monospace !important;
+      }
+
+      h2 {
+        text-transform: none !important;
+      }
+
+      img.skillset-logo {
+        width: 20%;
+        height: 20%;
+      }
+
+      img.recent-business {
+        float: left;
+        width: 20%;
+      }
+
+      .content-right {
+        margin-left: 52%;
+      }
+
+      .white {
+        color: #ffffff !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+
+        <section data-markdown data-separator="^\n---\n$" data-vertical="^\n--\n$" data-element-attributes="{_\s*?([^}]+?)}">
+          <script type="text/template">
+            ## デプロイ改善物語
+
+            2014.12.19
+
+            ---
+
+            ## 自己紹介
+
+            * 永宮　悠大（Yuta Nagamiya）
+
+            * 2008年度入社
+
+            --
+
+            ## スキルセット
+
+            ![](img/php-logo.png) <!-- {_class="skillset-logo"} -->
+            ![](img/codeigniter-logo.jpg) <!-- {_class="skillset-logo"} -->
+            ![](img/laravel-logo.jpg) <!-- {_class="skillset-logo"} -->
+            ![](img/mysql-logo.png) <!-- {_class="skillset-logo"} -->
+            ![](img/memcached-logo.png) <!-- {_class="skillset-logo"} -->
+            ![](img/apache-logo.png) <!-- {_class="skillset-logo"} -->
+            ![](img/css3-html5-jquery-bootstrap-logo.png) <!-- {_class="skillset-logo"} -->
+            ![](img/lpi-logo.jpg) <!-- {_class="skillset-logo"} -->
+
+            --
+
+            ## 最近の仕事
+
+            ![](img/dmenunews.png) <!-- {_class="recent-business"} -->
+
+            * dメニューニュース <!-- {_class="content-right"} -->
+
+              * http://topics.smt.docomo.ne.jp/ <!-- {_class="content-right"} -->
+
+            * 2014年11月デザインリニューアル <!-- {_class="content-right"} -->
+
+            ---
+
+            ## デプロイを自動化する話
+
+            ---
+
+            ## ソフトウェアデプロイメント
+
+            > ソフトウェアデプロイメント（英: Software deployment）とは、ソフトウェアシステムを利用可能にする活動全般を指す用語である。デプロイメント（Deployment）とは「展開、配備、配置」などの意。
+
+            Wikipedia
+
+            ---
+
+            ## svn up
+
+            --
+
+            ## svn upによるデプロイ
+
+            ```
+            $ ssh up /var/www/site.com
+            ```
+
+            --
+
+            ![](img/02.jpg)
+
+            ## そんなわけない <!-- {_class="fragment" data-fragment-index="1"} -->
+
+            --
+
+            ## サーバのスケールアウトに対応できなかった
+
+            * Webサーバが21台に
+
+            * 1台1台デプロイしてたら日が暮れてしまう
+
+            ---
+
+            <!-- .slide: data-background="#32B490" -->
+
+            ## pdsh <!-- {_class="white"} -->
+
+            Parallel Distributed Shell <!-- {_class="white"} -->
+
+            https://code.google.com/p/pdsh/ <!-- {_class="white"} -->
+
+            --
+
+            ## pdshとは
+
+            * SHHの並列実行ツール
+            * リモートで複数のサーバに対してコマンドを実行できる
+
+            --
+
+            ```
+            $ pdsh -g web "svn up /var/www/site.com"
+            ```
+
+            --
+
+            ![](img/02.jpg)
+
+            ## そんなわけない <!-- {_class="fragment" data-fragment-index="1"} -->
+
+            --
+
+            ## デプロイ手順の複雑化
+
+            * アプリケーションが複雑化するにつれ手順も複雑化
+
+            --
+
+            ```
+            $ pdsh -g web "svn info /var/www/site.com"
+            ```
+
+            ```
+            $ pdsh -g web "svn up /var/www/site.com/public"
+            ```
+
+            ```
+            $ pdsh -g web "svn up /var/www/site.com"
+            ```
+
+            --
+
+            ## 結果、こうなる
+
+            ![](img/03.jpg)
+
+            ---
+
+            ## Shell script
+
+            ![](img/01.jpg) <!-- {_class="fragment" data-fragment-index="1"} -->
+
+            --
+
+            ## Shell scriptの問題
+
+            * ちょっと複雑なことをしようとすると誰も読めない複雑なスクリプトができあがる
+            * 秘伝のタレ化する
+
+            ---
+
+            <!-- .slide: data-background="#32B490" -->
+
+            ## Deployer <!-- {_class="white"} -->
+
+            Deployment Tool for PHP <!-- {_class="white"} -->
+
+            http://deployer.in/ <!-- {_class="white"} -->
+
+            --
+
+            ## Deployerとは
+
+            * PHP製のデプロイツール
+
+            * タスクをPHPで記述することができる
+
+            --
+
+            ```
+            |-- current → /var/www/site.com/releases/20140812131123
+            |-- releases
+            |   `-- 20140812131123
+            |   `-- 20140809150234
+            |   `-- 20140801145678
+            `-- shared
+                `-- application
+                    `-- cache
+                    `-- logs
+            ```
+
+            --
+
+            ## かつてのデプロイ手順
+
+            1. デプロイサーバにsshでログインする
+
+            2. pdshで`svn info`を実行して、切り戻し用のリビジョンを確認する
+
+            3. pdshで`svn up`を実行して、アプリケーションを最新化する
+
+            4. pdshで`composer install`を実行して、サードパーティー製のパッケージを最新化する
+
+            --
+
+            ## かつてのデプロイ手順
+
+            1. `$ pdsh -g web "sudo -u app_user -H svn info /var/ww/site.com"`
+
+            2. `$ pdsh -g web "sudo -u app_user -H svn up /var/ww/site.com"`
+
+            3. `$ pdsh -g web "cd /var/www/site.com; sudo -u app_user -H composer install"`
+
+            --
+
+            ## デプロイツールの恩恵
+
+            1. `$ dep deploy`
+
+            1. `$ dep rollback`
+
+            --
+
+            ## タスクの定義
+
+            ```php
+task('deploy:update_code', function () {
+    $basePath = config()->getPath();
+    $repository = get('repository', false);
+
+    if (false === $repository) {
+        throw new \RuntimeException('You have to specify repository.');
+    }
+
+    $release = date('Ymd') . substr((string)time(), -5);
+    $releasePath = "$basePath/releases/$release";
+
+    env()->setReleasePath($releasePath);
+    env()->set('is_new_release', true);
+
+    run("svn co $repository $releasePath");
+    run("chmod -R g+w $releasePath");
+})->desc('Updating code');
+
+            ```
+
+            --
+
+            ## タスクのグループ化
+
+            ```php
+task('deploy', [
+    'deploy:start',
+    'deploy:prepare',
+    'deploy:update_code',
+    'deploy:vendors',
+    'deploy:symlink',
+    'cleanup',
+    'deploy:end'
+])->desc('Deploy your project');
+            ```
+
+            --
+
+            ## デプロイツールの恩恵
+
+            * 作業ミスが格段に減る
+
+            * デプロイに要する時間が短縮
+
+            * デプロイに対する心理的障壁が下がる
+
+            * コード化されることで作業が明確になった
+
+            --
+
+            ![](img/02.jpg)
+
+            ## 今のところはね <!-- {_class="fragment" data-fragment-index="1"} -->
+
+            ---
+
+            ## まとめ
+
+            * デプロイツールを使うと便利
+
+            * 慣れ親しんだ言語 
+
+            * デプロイ手順をデフォルトに寄せよう
+
+            ---
+
+            <!-- .slide: data-background="img/naushika-end.jpg" -->
+
+          </script>
+        </section>
+
+      </div>
+    </div>
+
+    <script src="../../reveal.js/lib/js/head.min.js"></script>
+    <script src="../../reveal.js/js/reveal.js"></script>
+    <script>
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: '../../reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: '../../reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: '../../reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: '../../reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: '../../reveal.js/plugin/notes/notes.js' }
+        ]
+      });
+    </script>
+  </body>
+</html>
