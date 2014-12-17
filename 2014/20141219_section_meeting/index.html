@@ -138,7 +138,7 @@
 
             ## pdshとは
 
-            * SHHの並列実行ツール
+            * SSHの並列実行ツール
             * リモートで複数のサーバに対してコマンドを実行できる
 
             --
@@ -158,6 +158,8 @@
             ## デプロイ手順の複雑化
 
             * アプリケーションが複雑化するにつれ手順も複雑化
+
+            * 手順が複雑化するにつれpdshでやることが増えた
 
             --
 
@@ -181,7 +183,7 @@
 
             ---
 
-            ## Shell script
+            ## Shell script <!-- {_style="color: #D45856"} -->
 
             ![](img/01.jpg) <!-- {_class="fragment" data-fragment-index="1"} -->
 
@@ -190,7 +192,7 @@
             ## Shell scriptの問題
 
             * ちょっと複雑なことをしようとすると誰も読めない複雑なスクリプトができあがる
-            * 秘伝のタレ化する
+            * 秘伝のタレ化待ったなし
 
             ---
 
@@ -211,6 +213,64 @@
             * タスクをPHPで記述することができる
 
             --
+
+            <!-- .slide: data-transition="none" -->
+
+            ## Deployerによるデプロイ
+
+            ![](img/deployer_deploy_01.JPG)
+
+            --
+
+            <!-- .slide: data-transition="none" -->
+
+            ## Deployerによるデプロイ
+
+            ![](img/deployer_deploy_02.JPG)
+
+            --
+
+            <!-- .slide: data-transition="none" -->
+
+            ## Deployerによるデプロイ
+
+            ![](img/deployer_deploy_03.JPG)
+
+            --
+
+            <!-- .slide: data-transition="none" -->
+
+            ## Deployerによるデプロイ
+
+            ![](img/deployer_deploy_04.JPG)
+
+            --
+
+            <!-- .slide: data-transition="none" -->
+
+            ## Deployerによるデプロイ
+
+            ![](img/deployer_deploy_05.JPG)
+
+            --
+
+            <!-- .slide: data-transition="none" -->
+
+            ## Deployerによるデプロイ
+
+            ![](img/deployer_deploy_06.JPG)
+
+            --
+
+            <!-- .slide: data-transition="none" -->
+
+            ## Deployerによるデプロイ
+
+            ![](img/deployer_deploy_07.JPG)
+
+            --
+
+            ## Deployerによるデプロイ
 
             ```
             |-- current → /var/www/site.com/releases/20140812131123
@@ -240,19 +300,25 @@
 
             ## かつてのデプロイ手順
 
-            1. `$ pdsh -g web "sudo -u app_user -H svn info /var/ww/site.com"`
+            ```
+            $ pdsh -g web "sudo -u app_user -H svn info /var/ww/site.com"
+            ```
 
-            2. `$ pdsh -g web "sudo -u app_user -H svn up /var/ww/site.com"`
+            ```
+            $ pdsh -g web "sudo -u app_user -H svn up /var/ww/site.com"
+            ```
 
-            3. `$ pdsh -g web "cd /var/www/site.com; sudo -u app_user -H composer install"`
+            ```
+            $ pdsh -g web "cd /var/www/site.com; sudo -u app_user -H composer install"
+            ```
 
             --
 
             ## デプロイツールの恩恵
 
-            1. `$ dep deploy`
-
-            1. `$ dep rollback`
+            ```
+            $ dep deploy
+            ```
 
             --
 
@@ -262,6 +328,7 @@
 task('deploy:update_code', function () {
     $basePath = config()->getPath();
     $repository = get('repository', false);
+    $baseRepository = get('base_repository', false);
 
     if (false === $repository) {
         throw new \RuntimeException('You have to specify repository.');
@@ -273,8 +340,10 @@ task('deploy:update_code', function () {
     env()->setReleasePath($releasePath);
     env()->set('is_new_release', true);
 
-    run("svn co $repository $releasePath");
-    run("chmod -R g+w $releasePath");
+    run("sudo -u app_user -H svn co $repository $releasePath");
+    run("sudo -u app_user -H svn co $baseRepository $releasePath/base");
+
+    run("sudo -u app_user -H mkdir $releasePath/logs");
 })->desc('Updating code');
 
             ```
@@ -288,10 +357,11 @@ task('deploy', [
     'deploy:start',
     'deploy:prepare',
     'deploy:update_code',
-    'deploy:vendors',
+    'deploy:shared',
+    'deploy:writeable_dirs',
     'deploy:symlink',
     'cleanup',
-    'deploy:end'
+    'deploy:end',
 ])->desc('Deploy your project');
             ```
 
