@@ -38,8 +38,28 @@
         margin-left: 52%;
       }
 
+      cite {
+        font-style: italic;
+      }
+
       .white {
         color: #ffffff !important;
+      }
+
+      .green {
+        color: #32B490 !important;
+      }
+
+      .red {
+        color: #D45856 !important;
+      }
+
+      .inline {
+        display: inline;
+      }
+
+      .underline {
+        text-decoration: underline !important;
       }
     </style>
   </head>
@@ -84,15 +104,17 @@
 
               * http://topics.smt.docomo.ne.jp/ <!-- {_class="content-right"} -->
 
-            * 2014年11月デザインリニューアル <!-- {_class="content-right"} -->
+            * 2012年12月リリース
+
+            * 2014年11月リニューアル <!-- {_class="content-right"} -->
 
             ---
 
-            ## デプロイを自動化する話
+            ## デプロイ作業を改善する話
 
-            ---
+            --
 
-            ## ソフトウェアデプロイメント
+            ## デプロイとは
 
             > ソフトウェアデプロイメント（英: Software deployment）とは、ソフトウェアシステムを利用可能にする活動全般を指す用語である。デプロイメント（Deployment）とは「展開、配備、配置」などの意。
 
@@ -100,14 +122,14 @@
 
             ---
 
-            ## svn up
+            ## svn co
 
             --
 
-            ## svn upによるデプロイ
+            ## svn coによるデプロイ
 
             ```
-            $ ssh up /var/www/site.com
+            $ svn co https://repository.com/svn/site.com/trunk /var/www/site.com
             ```
 
             --
@@ -118,11 +140,27 @@
 
             --
 
-            ## サーバのスケールアウトに対応できなかった
+            ## サーバの台数の増加
 
             * Webサーバが21台に
 
             * 1台1台デプロイしてたら日が暮れてしまう
+
+            --
+
+            ## 結果、こうなった
+
+            ![](img/03.jpg)
+
+            --
+
+            ### <p class="green inline">複数のデプロイ先サーバ</P>にコマンド1発できるツールがどこかにないものか
+
+            --
+
+            ## ある
+
+            ![](img/04.jpg)
 
             ---
 
@@ -132,7 +170,7 @@
 
             Parallel Distributed Shell <!-- {_class="white"} -->
 
-            https://code.google.com/p/pdsh/ <!-- {_class="white"} -->
+            [https://code.google.com/p/pdsh/](https://code.google.com/p/pdsh/) <!-- {_class="white underline"} -->
 
             --
 
@@ -143,8 +181,10 @@
 
             --
 
+            ## pdshによるデプロイ
+
             ```
-            $ pdsh -g web "svn up /var/www/site.com"
+            $ pdsh -g web "svn co https://repository.com/svn/site.com/trunk /var/www/site.com"
             ```
 
             --
@@ -155,44 +195,85 @@
 
             --
 
-            ## デプロイ手順の複雑化
+            ## アプリ構成の複雑化
 
-            * アプリケーションが複雑化するにつれ手順も複雑化
+            * ページキャッシュの利用
 
-            * 手順が複雑化するにつれpdshでやることが増えた
+            * 別リポジトリで管理された共通部品の利用
+
+            * Composerによるパッケージのインストール
 
             --
 
-            ```
-            $ pdsh -g web "svn info /var/www/site.com"
-            ```
+            ## これが
 
             ```
-            $ pdsh -g web "svn up /var/www/site.com/public"
-            ```
-
-            ```
-            $ pdsh -g web "svn up /var/www/site.com"
+            $ pdsh -g web "svn co https://repository.com/svn/site.com/trunk /var/www/site.com"
             ```
 
             --
 
-            ## 結果、こうなる
+            ## こうなった
+
+            ```
+            $ pdsh -g web "svn co https://repository.com/svn/site.com/trunk /var/www/site.com"
+            ```
+
+            ```
+            $ pdsh -g web "chmod o+w /var/www/site.com/application/logs"
+            ```
+
+            ```
+            $ pdsh -g web "chmod o+w /var/www/site.com/application/cache"
+            ```
+
+            ```
+            $ pdsh -g web "svn co https://repository.com/svn/base/trunk /var/www/site.com/base"
+            ```
+
+            ```
+            $ pdsh -g web "cd /var/www/site.com; composer install"
+            ```
+
+            --
+
+            ## 結果、こうなった
 
             ![](img/03.jpg)
 
-            ---
+            --
 
-            ## Shell script <!-- {_style="color: #D45856"} -->
+            #### 複雑なデプロイ手順を<br><p class="green inline">コマンド1つで実行</p>できる<br>ツールがどこかにないものか
+
+            --
+
+            ## ある
+
+            ![](img/04.jpg)
+
+            --
+
+            ## Shell script <!-- {_class="red"} -->
 
             ![](img/01.jpg) <!-- {_class="fragment" data-fragment-index="1"} -->
 
             --
 
-            ## Shell scriptの問題
+            ## <p class="red inline">Shell script</p>の問題点
 
-            * ちょっと複雑なことをしようとすると誰も読めない複雑なスクリプトができあがる
-            * 秘伝のタレ化待ったなし
+            * 記述が煩雑すぎる
+
+            * ちょっと複雑なことをしようとすると<br>誰も読めない複雑なスクリプトができあがる
+
+            --
+
+            #### 複雑なデプロイ手順を<br><p class="green inline">コマンド1つで実行</p>できて<br><p class="green inline">メンテナンスしやすい簡潔な記述</p>ができる<br>ツールがどこかにないものか
+
+            --
+
+            ## ある
+
+            ![](img/04.jpg)
 
             ---
 
@@ -202,7 +283,7 @@
 
             Deployment Tool for PHP <!-- {_class="white"} -->
 
-            http://deployer.in/ <!-- {_class="white"} -->
+            [http://deployer.in/](http://deployer.in/) <!-- {_class="white underline"} -->
 
             --
 
@@ -270,22 +351,6 @@
 
             --
 
-            ## Deployerによるデプロイ
-
-            ```
-            |-- current → /var/www/site.com/releases/20140812131123
-            |-- releases
-            |   `-- 20140812131123
-            |   `-- 20140809150234
-            |   `-- 20140801145678
-            `-- shared
-                `-- application
-                    `-- cache
-                    `-- logs
-            ```
-
-            --
-
             ## かつてのデプロイ手順
 
             1. デプロイサーバにsshでログインする
@@ -301,15 +366,23 @@
             ## かつてのデプロイ手順
 
             ```
-            $ pdsh -g web "sudo -u app_user -H svn info /var/ww/site.com"
+            $ pdsh -g web "svn co https://repository.com/svn/site.com/trunk /var/www/site.com"
             ```
 
             ```
-            $ pdsh -g web "sudo -u app_user -H svn up /var/ww/site.com"
+            $ pdsh -g web "chmod o+w /var/www/site.com/application/logs"
             ```
 
             ```
-            $ pdsh -g web "cd /var/www/site.com; sudo -u app_user -H composer install"
+            $ pdsh -g web "chmod o+w /var/www/site.com/application/cache"
+            ```
+
+            ```
+            $ pdsh -g web "svn co https://repository.com/svn/base/trunk /var/www/site.com/base"
+            ```
+
+            ```
+            $ pdsh -g web "cd /var/www/site.com; composer install"
             ```
 
             --
@@ -340,10 +413,10 @@ task('deploy:update_code', function () {
     env()->setReleasePath($releasePath);
     env()->set('is_new_release', true);
 
-    run("sudo -u app_user -H svn co $repository $releasePath");
-    run("sudo -u app_user -H svn co $baseRepository $releasePath/base");
+    run("svn co $repository $releasePath");
+    run("svn co $baseRepository $releasePath/base");
 
-    run("sudo -u app_user -H mkdir $releasePath/logs");
+    run("mkdir $releasePath/logs");
 })->desc('Updating code');
 
             ```
@@ -371,11 +444,11 @@ task('deploy', [
 
             * 作業ミスが格段に減る
 
-            * デプロイに要する時間が短縮
+            * デプロイ時間を短縮できる
 
             * デプロイに対する心理的障壁が下がる
 
-            * コード化されることで作業が明確になった
+            * コード化されることで作業が明確になる
 
             --
 
@@ -395,7 +468,9 @@ task('deploy', [
 
             ---
 
-            <!-- .slide: data-background="img/naushika-end.jpg" -->
+            ## 完
+
+            ありがとうございました
 
           </script>
         </section>
