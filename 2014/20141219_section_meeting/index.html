@@ -2,7 +2,7 @@
 <html lang="ja">
   <head>
     <meta charset="utf-8">
-    <title>reveal.js - Markdown Demo</title>
+    <title>デプロイの効率化</title>
     <link rel="stylesheet" href="../../reveal.js/css/reveal.css">
     <link rel="stylesheet" href="../../reveal.js/css/theme/beige.css" id="theme">
     <link rel="stylesheet" href="../../reveal.js/lib/css/zenburn.css">
@@ -24,18 +24,17 @@
         text-transform: none !important;
       }
 
-      img.skillset-logo {
+      .width-20pct {
         width: 20%;
-        height: 20%;
       }
 
-      img.recent-business {
+      .content-left-20pct {
         float: left;
         width: 20%;
       }
 
-      .content-right {
-        margin-left: 52%;
+      .content-right-70pct {
+        margin-left: 30%;
       }
 
       cite {
@@ -61,6 +60,11 @@
       .underline {
         text-decoration: underline !important;
       }
+
+      .slide-green li {
+        background: #32B490 !important;
+        color: #ffffff !important;
+      }
     </style>
   </head>
   <body>
@@ -85,32 +89,34 @@
 
             ## スキルセット
 
-            ![](img/php-logo.png) <!-- {_class="skillset-logo"} -->
-            ![](img/codeigniter-logo.jpg) <!-- {_class="skillset-logo"} -->
-            ![](img/laravel-logo.jpg) <!-- {_class="skillset-logo"} -->
-            ![](img/mysql-logo.png) <!-- {_class="skillset-logo"} -->
-            ![](img/memcached-logo.png) <!-- {_class="skillset-logo"} -->
-            ![](img/apache-logo.png) <!-- {_class="skillset-logo"} -->
-            ![](img/css3-html5-jquery-bootstrap-logo.png) <!-- {_class="skillset-logo"} -->
-            ![](img/lpi-logo.jpg) <!-- {_class="skillset-logo"} -->
+            ![](img/php-logo.png) <!-- {_class="width-20pct"} -->
+            ![](img/codeigniter-logo.jpg) <!-- {_class="width-20pct"} -->
+            ![](img/laravel-logo.jpg) <!-- {_class="width-20pct"} -->
+            ![](img/mysql-logo.png) <!-- {_class="width-20pct"} -->
+            ![](img/memcached-logo.png) <!-- {_class="width-20pct"} -->
+            ![](img/apache-logo.png) <!-- {_class="width-20pct"} -->
+            ![](img/css3-html5-jquery-bootstrap-logo.png) <!-- {_class="width-20pct"} -->
+            ![](img/lpi-logo.jpg) <!-- {_class="width-20pct"} -->
 
             --
 
             ## 最近の仕事
 
-            ![](img/dmenunews.png) <!-- {_class="recent-business"} -->
+            ![](img/dmenunews.png) <!-- {_class="content-left-20pct"} -->
 
-            * dメニューニュース <!-- {_class="content-right"} -->
+            * dメニューニュース <!-- {_class="content-right-70pct"} -->
 
-              * http://topics.smt.docomo.ne.jp/ <!-- {_class="content-right"} -->
+              * [http://topics.smt.docomo.ne.jp/](http://topics.smt.docomo.ne.jp/) <!-- {_class="content-right-70"} -->
 
             * 2012年12月リリース
 
-            * 2014年11月リニューアル <!-- {_class="content-right"} -->
+            * 2014年11月リニューアル <!-- {_class="content-right-70"} -->
 
             ---
 
-            ## デプロイ作業を改善する話
+            <!-- .slide: data-background="#32B490" -->
+
+            ## デプロイ作業を<br>ツール化する話 <!-- {_class="white"} -->
 
             --
 
@@ -129,7 +135,7 @@
             ## svn coによるデプロイ
 
             ```
-            $ svn co https://repository.com/svn/site.com/trunk /var/www/site.com
+            $ svn co https://repos.com/svn/site.com/trunk /var/www/site.com
             ```
 
             --
@@ -184,7 +190,7 @@
             ## pdshによるデプロイ
 
             ```
-            $ pdsh -g web "svn co https://repository.com/svn/site.com/trunk /var/www/site.com"
+            $ pdsh -g web "svn co https://repos.com/svn/site.com/trunk /var/www/site.com"
             ```
 
             --
@@ -208,7 +214,11 @@
             ## これが
 
             ```
-            $ pdsh -g web "svn co https://repository.com/svn/site.com/trunk /var/www/site.com"
+            $ pdsh -g web "svn co https://repos.com/svn/site.com/trunk /var/www/site.com"
+            ```
+
+            ```
+            $ pdsh -g web "chmod o+w /var/www/site.com/application/logs"
             ```
 
             --
@@ -216,7 +226,7 @@
             ## こうなった
 
             ```
-            $ pdsh -g web "svn co https://repository.com/svn/site.com/trunk /var/www/site.com"
+            $ pdsh -g web "svn co https://repos.com/svn/site.com/trunk /var/www/site.com"
             ```
 
             ```
@@ -228,7 +238,11 @@
             ```
 
             ```
-            $ pdsh -g web "svn co https://repository.com/svn/base/trunk /var/www/site.com/base"
+            $ pdsh -g web "chmod o+w /var/www/site.com/application/meta"
+            ```
+
+            ```
+            $ pdsh -g web "svn co https://repos.com/svn/base/trunk /var/www/site.com/base"
             ```
 
             ```
@@ -353,20 +367,8 @@
 
             ## かつてのデプロイ手順
 
-            1. デプロイサーバにsshでログインする
-
-            2. pdshで`svn info`を実行して、切り戻し用のリビジョンを確認する
-
-            3. pdshで`svn up`を実行して、アプリケーションを最新化する
-
-            4. pdshで`composer install`を実行して、サードパーティー製のパッケージを最新化する
-
-            --
-
-            ## かつてのデプロイ手順
-
             ```
-            $ pdsh -g web "svn co https://repository.com/svn/site.com/trunk /var/www/site.com"
+            $ pdsh -g web "svn co https://repos.com/svn/site.com/trunk /var/www/site.com"
             ```
 
             ```
@@ -378,7 +380,11 @@
             ```
 
             ```
-            $ pdsh -g web "svn co https://repository.com/svn/base/trunk /var/www/site.com/base"
+            $ pdsh -g web "chmod o+w /var/www/site.com/application/meta"
+            ```
+
+            ```
+            $ pdsh -g web "svn co https://repos.com/svn/base/trunk /var/www/site.com/base"
             ```
 
             ```
@@ -454,17 +460,29 @@ task('deploy', [
 
             ![](img/02.jpg)
 
-            ## 今のところはね <!-- {_class="fragment" data-fragment-index="1"} -->
-
             ---
 
-            ## まとめ
+            <!-- .slide: data-background="#32B490" class="slide-green" -->
 
-            * デプロイツールを使うと便利
+            ## まとめ <!-- {_class="white"} -->
 
-            * 慣れ親しんだ言語
+            * Deployerを使うと簡単に<br>デプロイ手順をコード化できるよ <!-- {_class="white"} -->
 
-            * デプロイ手順をデフォルトに寄せよう
+            * PHPベースだから読み書きしやすいよ <!-- {_class="white"} -->
+
+            --
+
+            <!-- .slide: data-background="#32B490" class="slide-green" -->
+
+            ## まとめ <!-- {_class="white"} -->
+
+            * デプロイツールを使って <!-- {_class="white"} -->
+
+            * デプロイ作業を効率化して <!-- {_class="white"} -->
+
+            * 寝る時間を確保しよう <!-- {_class="white"} -->
+
+            * Try Deployer! <!-- {_class="white"} -->
 
             ---
 
