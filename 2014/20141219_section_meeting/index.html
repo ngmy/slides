@@ -2,7 +2,7 @@
 <html lang="ja">
   <head>
     <meta charset="utf-8">
-    <title>デプロイの効率化</title>
+    <title>デプロイツールの話</title>
     <link rel="stylesheet" href="../../reveal.js/css/reveal.css">
     <link rel="stylesheet" href="../../reveal.js/css/theme/beige.css" id="theme">
     <link rel="stylesheet" href="../../reveal.js/lib/css/zenburn.css">
@@ -38,7 +38,7 @@
       }
 
       cite {
-        font-style: italic;
+        font-style: italic !important;
       }
 
       .white {
@@ -73,7 +73,7 @@
 
         <section data-markdown data-separator="^\n---\n$" data-vertical="^\n--\n$" data-element-attributes="{_\s*?([^}]+?)}">
           <script type="text/template">
-            ## デプロイ改善物語
+            ## デプロイツールの話
 
             2014.12.19
 
@@ -116,7 +116,7 @@
 
             <!-- .slide: data-background="#32B490" -->
 
-            ## デプロイ作業を<br>ツール化する話 <!-- {_class="white"} -->
+            ## デプロイツールの話 <!-- {_class="white"} -->
 
             --
 
@@ -124,9 +124,13 @@
 
             > ソフトウェアデプロイメント（英: Software deployment）とは、ソフトウェアシステムを利用可能にする活動全般を指す用語である。デプロイメント（Deployment）とは「展開、配備、配置」などの意。
 
-            Wikipedia
+            — <cite>Wikipedia</cite>
 
             ---
+
+            ## 一番簡単なデプロイツール
+
+            --
 
             ## svn co
 
@@ -138,6 +142,10 @@
             $ svn co https://repos.com/svn/site.com/trunk /var/www/site.com
             ```
 
+            ```
+            $ chmod o+w /var/www/site.com/application/logs
+            ```
+
             --
 
             ![](img/02.jpg)
@@ -146,21 +154,21 @@
 
             --
 
-            ## サーバの台数の増加
+            ## 大量のアプリサーバ
 
-            * Webサーバが21台に
+            * Webアプリケーションサーバが21台
 
-            * 1台1台デプロイしてたら日が暮れてしまう
+            * 1台1台デプロイするのはとても面倒
 
             --
 
-            ## 結果、こうなった
+            ## 結果、こうなる
 
             ![](img/03.jpg)
 
             --
 
-            ### <p class="green inline">複数のデプロイ先サーバ</P>にコマンド1発できるツールがどこかにないものか
+            #### <p class="green inline">複数のリモートサーバ</p>に<br>アプリをデプロイできる<br>ツールがどこかにないものか
 
             --
 
@@ -183,7 +191,7 @@
             ## pdshとは
 
             * SSHの並列実行ツール
-            * リモートで複数のサーバに対してコマンドを実行できる
+            * 複数のリモートサーバに対して同じコマンドを<br>並列実行できる
 
             --
 
@@ -191,6 +199,10 @@
 
             ```
             $ pdsh -g web "svn co https://repos.com/svn/site.com/trunk /var/www/site.com"
+            ```
+
+            ```
+            $ pdsh -g web "chmod o+w /var/www/site.com/application/logs"
             ```
 
             --
@@ -251,13 +263,13 @@
 
             --
 
-            ## 結果、こうなった
+            ## 結果、こうなる
 
             ![](img/03.jpg)
 
             --
 
-            #### 複雑なデプロイ手順を<br><p class="green inline">コマンド1つで実行</p>できる<br>ツールがどこかにないものか
+            #### <p class="green inline">複数のリモートサーバ</p>に<br><p class="green inline">複雑なデプロイ手順</p>が必要なアプリを<br><p class="green inline">コマンド1つ</p>でデプロイできる<br>ツールがどこかにないものか
 
             --
 
@@ -281,7 +293,7 @@
 
             --
 
-            #### 複雑なデプロイ手順を<br><p class="green inline">コマンド1つで実行</p>できて<br><p class="green inline">メンテナンスしやすい簡潔な記述</p>ができる<br>ツールがどこかにないものか
+            #### <p class="green inline">複数のリモートサーバ</p>に<br><p class="green inline">複雑なデプロイ手順</p>が必要なアプリを<br><p class="green inline">コマンド1つ</p>でデプロイでき<br><p class="green inline">メンテナンスしやすい簡潔な記述</p>ができる<br>ツールがどこかにないものか
 
             --
 
@@ -305,7 +317,7 @@
 
             * PHP製のデプロイツール
 
-            * タスクをPHPで記述することができる
+            * デプロイのタスクをPHPで記述することができる
 
             --
 
@@ -481,8 +493,6 @@ task('deploy', [
             * デプロイ作業を効率化して <!-- {_class="white"} -->
 
             * 寝る時間を確保しよう <!-- {_class="white"} -->
-
-            * Try Deployer! <!-- {_class="white"} -->
 
             ---
 
